@@ -1,0 +1,406 @@
+{
+    "info": {
+        "_postman_id": "af8a235f-b9f4-42d3-b541-82110e9e84b9",
+        "name": "Environment Scanner",
+        "description": "# Who this collection is for\nSecurity teams who are looking to automate the process of checking for secrets leaking within Postman. Beyond providing education and training, we can continually assess our Postman data all of the time through this powerful collection.\n\n# What does this collection do?\nThis collection is designed to be setup as a Postman Monitor to scan Postman Environments within Team Workspaces that might be exposing secrets through the initial value field.\n\n# Setup\n\n## Configure the Postman Environment\n\n1) Review the provided `Environment Scanner` Postman Environment. The `regex` field contains key value pairings of a) the type of secret and b) the regex to match such a secret. This should be altered to cover the types of secrets you wish to scan for. We've included a range of popular types of secrets for your convenience.\n\n2) [Create a Postman API key](https://learning.postman.com/docs/postman/postman-api/intro-api/#postman-api-overview) and add this to the `postmanAPIKey` field within the `Enviroment Scanner` Postman Environment. It should sit within both the initial and current value columns.\n\n## Create the Postman Monitor\n\n1) On the imported `Environment Scanner` Postman Collection, go into the Collection menu and select `Monitor Collection`. See [Creating a Monitor](https://learning.postman.com/docs/postman/monitors/setting-up-monitor/) for more help.\n\n2) The `Monitor run frequency` you select will determine how often the collection runs. Once daily is likely fine to begin within.\n\n3) Select `Show additional preferences` and set the `Request delay` to `1000`ms. This is necessary such that we don't get rate limited against the Postman API.\n\n4) You can now hit `Create` and the monitor will execute on the frequency you selected.\n\n## Viewing Results\n\n1) [Our existing documentation](https://learning.postman.com/docs/postman/monitors/viewing-monitor-results/) covers how to view the results of a monitor.\n\n2) You will see that the `Environment Scanner` executes many requests through its collection run. Scroll all the way to the bottom. For each test failure that you see, this indicates a potentially exposed secret. The offending environment's ID, and the exact key containing the secret are provided. In this case, two environments are highlighted, each with a single offending key.\n\n![Monitor results](https://i.imgur.com/foKEz7r.png)\n\n3) Scrolling to the top of the Monitor results, select the `Console Log` tab. Again, scrolling all the way to the bottom, you can find a JSON output of these results:\n\n![Logs](https://i.imgur.com/EVxEuS0.png)\n\n4) To review and correct an enviromnent in question, simply take the Environment ID found in the test failure / the `env` value in the logs, and append to `https://go.postman.co/environments/<env ID here>`. e.g. `https://go.postman.co/environments/10019550-b3c438b5-6bb0-4e90-8787-b936a0df00fe`. From here, the environment can be deleted altogether or the residing workspace can be identified through the top left workspace drop down, therefore allowing discovery and modification within Postman itself.\n\n\n### The following request details can be ignored are internal to the scanners functionality.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET all workspaces",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "0b9b24cd-ba3e-40cc-9f36-ed819ee7608d",
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "var countWorkspaces = Object.keys(jsonData.workspaces).length;",
+                            "var teamWorkspaceArr = [];",
+                            "",
+                            "// filter out public workspaces(Team Workspaces)",
+                            "for (var i = 0; i < countWorkspaces; i++) {",
+                            "    if (jsonData.workspaces[i].type === \"team\") {",
+                            "        teamWorkspaceArr.push(jsonData.workspaces[i].id);",
+                            "    }",
+                            "}",
+                            "",
+                            "pm.variables.set(\"teamWorkspaceArray\", teamWorkspaceArr);",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "d57843be-54fc-4fd3-8041-919ffd48b804",
+                        "exec": [
+                            "var postmanAPIKey = pm.environment.get(\"postmanAPIKey\");",
+                            "var regex = pm.environment.get(\"regex\");",
+                            "",
+                            "if (postmanAPIKey && regex) {",
+                            "    // Looping through the array",
+                            "    pm.variables.set(\"workspaceCounter\", 0);",
+                            "    pm.variables.set(\"environmentCounter\", 0);",
+                            "    ",
+                            "    // Flags for initialization",
+                            "    pm.variables.set(\"workspaceFlag\", 0);",
+                            "    pm.variables.set(\"environmentFlag\", 0);",
+                            "    ",
+                            "    // Initialiaze array every time the monitor runs",
+                            "    pm.variables.set(\"environmentArrayTeam\", []);",
+                            "    pm.variables.set(\"classified\", []);",
+                            "    pm.variables.set(\"keyValueString\", []);",
+                            "} else {",
+                            "    console.log(\"Please Provide Necessary Environment Variables\");",
+                            "    postman.setNextRequest(null);",
+                            "}",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "9e3868ab-5f67-4d4f-bd6d-e25af1ebca35",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "url": {
+                    "raw": "https://api.getpostman.com/workspaces",
+                    "protocol": "https",
+                    "host": [
+                        "api",
+                        "getpostman",
+                        "com"
+                    ],
+                    "path": [
+                        "workspaces"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Access the contents of workspaces accessible to you",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "e8ee812c-c609-4d0e-b14f-9708773c6d26",
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "var workspaceFlag = pm.variables.get(\"workspaceFlag\");",
+                            "",
+                            "if (workspaceFlag === 0) {",
+                            "    var environmentArrayTeam = [];",
+                            "    workspaceFlag += 1;",
+                            "    pm.variables.set(\"workspaceFlag\", workspaceFlag);",
+                            "    postman.setNextRequest(\"Access the contents of workspaces accessible to you\");",
+                            "} else {",
+                            "    var environmentArrayTeam = pm.variables.get(\"environmentArrayTeam\");",
+                            "    ",
+                            "    if (jsonData.workspace.hasOwnProperty(\"environments\")) {",
+                            "        var counter = pm.variables.get(\"workspaceCounter\");",
+                            "        pm.variables.set(\"workspaceCounter\", ++counter);",
+                            "        var nextCounter = pm.variables.get(\"workspaceCounter\"); ",
+                            "        var arrSize = pm.variables.get(\"teamWorkspaceArray\").length; ",
+                            "        var currentEnvironmentSize = jsonData.workspace.environments.length;",
+                            "        ",
+                            "        if (currentEnvironmentSize !== 0) {",
+                            "            // Populate Environment Array",
+                            "            for (var i = 0; i < currentEnvironmentSize; i++) {",
+                            "                environmentArrayTeam.push(jsonData.workspace.environments[i].uid);",
+                            "            }",
+                            "        }",
+                            "        ",
+                            "        pm.variables.set(\"environmentArrayTeam\", environmentArrayTeam);",
+                            "        ",
+                            "        if (nextCounter < arrSize ) {",
+                            "            postman.setNextRequest(\"Access the contents of workspaces accessible to you\");",
+                            "        }",
+                            "    } else {",
+                            "        // if there is no public environment in the workspace",
+                            "        var counter = pm.variables.get(\"workspaceCounter\");",
+                            "        pm.variables.set(\"workspaceCounter\", ++counter);",
+                            "        var nextCounter = pm.variables.get(\"workspaceCounter\"); ",
+                            "        var arrSize = pm.variables.get(\"teamWorkspaceArray\").length; ",
+                            "        ",
+                            "        if (nextCounter < arrSize) {",
+                            "            postman.setNextRequest(\"Access the contents of workspaces accessible to you\");",
+                            "        }",
+                            "    }",
+                            "}",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "d238a5e4-6a65-427e-b74b-525e951b77b8",
+                        "exec": [
+                            "var teamWorkspaceArray = pm.variables.get(\"teamWorkspaceArray\");",
+                            "var arraySize = teamWorkspaceArray.length;",
+                            "var counter = pm.variables.get(\"workspaceCounter\");",
+                            "",
+                            "if (counter < arraySize) {",
+                            "    pm.variables.set(\"workspaceId\", teamWorkspaceArray[counter]);",
+                            "}",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "1f29ec56-1638-4fd0-b747-c0c0d0991ba7",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{postmanAPIKey}}"
+                    }
+                ],
+                "url": {
+                    "raw": "https://api.getpostman.com/workspaces/{{workspaceId}}",
+                    "protocol": "https",
+                    "host": [
+                        "api",
+                        "getpostman",
+                        "com"
+                    ],
+                    "path": [
+                        "workspaces",
+                        "{{workspaceId}}"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Access contents of a specific environment",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "ea8c3619-9342-43e9-87d2-bdb7fbcd5b52",
+                        "exec": [
+                            "var environmentArrayTeam = pm.variables.get(\"environmentArrayTeam\");",
+                            "var arraySize = environmentArrayTeam.length;",
+                            "var counter = pm.variables.get(\"environmentCounter\");",
+                            "",
+                            "if (counter < arraySize) {",
+                            "    pm.variables.set(\"environmentUid\", environmentArrayTeam[counter]);",
+                            "}",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "50a09f3c-019c-4d0c-9cb8-14d00263667a",
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "var environmentFlag = pm.variables.get(\"environmentFlag\");",
+                            "",
+                            "if (environmentFlag === 0) {",
+                            "    var keyValueString = \"[]\";",
+                            "    ",
+                            "    pm.variables.set(\"keyValueString\", keyValueString);",
+                            "    environmentFlag += 1;",
+                            "    pm.variables.set(\"environmentFlag\", environmentFlag);",
+                            "    postman.setNextRequest(\"Access contents of a specific environment\");",
+                            "} else {",
+                            "    var keyValueString = JSON.parse(pm.variables.get(\"keyValueString\"));",
+                            "",
+                            "    if (jsonData.environment.hasOwnProperty(\"values\")) {",
+                            "        var counter = pm.variables.get(\"environmentCounter\");",
+                            "        pm.variables.set(\"environmentCounter\", ++counter);",
+                            "        var nextCounter = pm.variables.get(\"environmentCounter\");",
+                            "        var arrSize = pm.variables.get(\"environmentArrayTeam\").length; ",
+                            "        var valuesArrSize = jsonData.environment.values.length;",
+                            "        ",
+                            "        if (valuesArrSize !== 0) {",
+                            "            for (var i = 0; i < valuesArrSize; i++) {",
+                            "                keyValueString.push({",
+                            "                    env: pm.variables.get(\"environmentUid\"),",
+                            "                    key: jsonData.environment.values[i].key,",
+                            "                    val: jsonData.environment.values[i].value",
+                            "                });",
+                            "            }",
+                            "        }",
+                            "        ",
+                            "        pm.variables.set(\"keyValueString\", JSON.stringify(keyValueString));",
+                            "        ",
+                            "        if (nextCounter < arrSize) {",
+                            "            postman.setNextRequest(\"Access contents of a specific environment\");",
+                            "        }",
+                            "    } else {",
+                            "        postman.setNextRequest(\"Access contents of a specific environment\");",
+                            "        var counter = pm.variables.get(\"environmentCounter\");",
+                            "        pm.variables.set(\"environmentCounter\", ++counter);",
+                            "    }",
+                            "}",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "544be483-39d1-46c6-9a9b-ca4352f7364e",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{postmanAPIKey}}"
+                    }
+                ],
+                "url": {
+                    "raw": "https://api.getpostman.com/environments/{{environmentUid}}",
+                    "protocol": "https",
+                    "host": [
+                        "api",
+                        "getpostman",
+                        "com"
+                    ],
+                    "path": [
+                        "environments",
+                        "{{environmentUid}}"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Scan leaked key",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "70a0c10c-b350-4b97-9b31-fa666265720f",
+                        "exec": [
+                            "var keyValueString = JSON.parse(pm.variables.get(\"keyValueString\"));",
+                            "var arraySize = keyValueString.length;",
+                            "",
+                            "//Fetch Environment Varaible",
+                            "for (var i = 0; i < arraySize; i++) {",
+                            "    var currentSecretValue = keyValueString[i].val;",
+                            "    var currentSecretKey = keyValueString[i].key;",
+                            "    var currentSecretEnv = keyValueString[i].env;",
+                            "    const regex = JSON.parse(pm.environment.get(\"regex\"));",
+                            "    ",
+                            "    if (currentSecretValue !== null && typeof currentSecretValue == \"string\") {",
+                            "        var classified = pm.variables.get(\"classified\"); ",
+                            "",
+                            "        for (var key in regex) {",
+                            "            temp = currentSecretValue.match(regex[key]);",
+                            "            ",
+                            "            if (temp !== null) {",
+                            "                let okey = temp[0];",
+                            "                okey = okey.slice(0, okey.length / 2);",
+                            "                var newokey = okey+\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\";",
+                            "                ",
+                            "                pm.test(\"Environment: \" + currentSecretEnv + \" / Key: \" + currentSecretKey, function () {",
+                            "                    pm.expect(currentSecretKey).to.eql('clean');",
+                            "                });",
+                            "                ",
+                            "                classified.push({",
+                            "                    env: currentSecretEnv,",
+                            "                    key: currentSecretKey,",
+                            "                    val: newokey",
+                            "                });",
+                            "            }",
+                            "        }",
+                            "    }",
+                            "}",
+                            "",
+                            "console.log(classified);",
+                            "",
+                            "pm.variables.set(\"classified\", classified);",
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "4ac1f0f4-9c29-4320-862b-4c645ebb6659",
+                        "exec": [
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "355db4c2-7808-4986-a70d-009442e1d6f6",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "type": "text",
+                        "value": "{{postmanAPIKey}}"
+                    }
+                ],
+                "url": {
+                    "raw": "https://api.getpostman.com/workspaces",
+                    "protocol": "https",
+                    "host": [
+                        "api",
+                        "getpostman",
+                        "com"
+                    ],
+                    "path": [
+                        "workspaces"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "6951581e-f840-45da-af56-12e0e3d97701",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "b34c9891-e43c-45c4-9e47-bcdea23e8b8d",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ]
+}
