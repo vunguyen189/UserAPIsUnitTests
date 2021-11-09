@@ -1,0 +1,486 @@
+{
+    "info": {
+        "_postman_id": "de14e4af-b137-4b13-b923-a039d368c2c0",
+        "name": "Jokes (NoEnv)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Random Joke",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "d9729a23-9598-4f96-bb4c-9b51fca55838",
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {\r",
+                            "    pm.response.to.have.status(200);\r",
+                            "});\r",
+                            "pm.test(\"Response time is less than 200ms\", function () {\r",
+                            "    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "06efdd9d-df94-4a9c-8c05-11643089c949",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "https://official-joke-api.appspot.com/random_joke?dasfasdf=fdsafasd",
+                    "protocol": "https",
+                    "host": [
+                        "official-joke-api",
+                        "appspot",
+                        "com"
+                    ],
+                    "path": [
+                        "random_joke"
+                    ],
+                    "query": [
+                        {
+                            "key": "dasfasdf",
+                            "value": "fdsafasd"
+                        }
+                    ]
+                },
+                "description": "Returns a random joke."
+            },
+            "response": []
+        },
+        {
+            "name": "Dad Jokes",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "92934cef-a784-45fd-92bf-7013c0949e95",
+                        "exec": [
+                            ""
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "4a914c0c-ae24-4d65-b9a4-15bc804426b6",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "fe24aeaf-3196-4922-ac68-7a6e3a7dbd43",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "https://icanhazdadjoke.com/?54356435=5345435&new",
+                    "protocol": "https",
+                    "host": [
+                        "icanhazdadjoke",
+                        "com"
+                    ],
+                    "path": [
+                        ""
+                    ],
+                    "query": [
+                        {
+                            "key": "54356435",
+                            "value": "5345435",
+                            "description": "description 4234234"
+                        },
+                        {
+                            "key": "new",
+                            "value": null,
+                            "type": "text"
+                        }
+                    ]
+                },
+                "description": "Returns a random dad joke."
+            },
+            "response": [
+                {
+                    "id": "8414c1bf-85be-4bba-8125-6d23057eea15",
+                    "name": "Dad Jokes skeleton",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "https://icanhazdadjoke.com/?54356435=5345435&new",
+                            "protocol": "https",
+                            "host": [
+                                "icanhazdadjoke",
+                                "com"
+                            ],
+                            "path": [
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "54356435",
+                                    "value": "5345435",
+                                    "description": "description 4234234"
+                                },
+                                {
+                                    "key": "new",
+                                    "value": null
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Date",
+                            "value": "Wed, 07 Apr 2021 18:36:01 GMT"
+                        },
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "key": "Transfer-Encoding",
+                            "value": "chunked"
+                        },
+                        {
+                            "key": "Connection",
+                            "value": "keep-alive"
+                        },
+                        {
+                            "key": "Cache-Control",
+                            "value": "max-age=0, must-revalidate, no-cache, no-store, public, s-maxage=0"
+                        },
+                        {
+                            "key": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "key": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        },
+                        {
+                            "key": "CF-Cache-Status",
+                            "value": "DYNAMIC"
+                        },
+                        {
+                            "key": "cf-request-id",
+                            "value": "094f37c6e600002fb90aadf000000001"
+                        },
+                        {
+                            "key": "Expect-CT",
+                            "value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+                        },
+                        {
+                            "key": "Report-To",
+                            "value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report?s=QxCj9%2F5OZM3JrQQXd5pojcwENE7U9ICXfrbN%2FXXNx%2BoU1e9pXgec1HN09kNI6CP9JEqNlDKxW8Ph6yBXR6GbnwfZDaudkY01gqoRBO7pOCe2kz4%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+                        },
+                        {
+                            "key": "NEL",
+                            "value": "{\"report_to\":\"cf-nel\",\"max_age\":604800}"
+                        },
+                        {
+                            "key": "Strict-Transport-Security",
+                            "value": "max-age=15552000; includeSubDomains"
+                        },
+                        {
+                            "key": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "key": "Server",
+                            "value": "cloudflare"
+                        },
+                        {
+                            "key": "CF-RAY",
+                            "value": "63c55beb0d4a2fb9-DFW"
+                        },
+                        {
+                            "key": "Content-Encoding",
+                            "value": "br"
+                        },
+                        {
+                            "key": "alt-svc",
+                            "value": "h3-27=\":443\"; ma=86400, h3-28=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+                        }
+                    ],
+                    "cookie": [],
+                    "responseTime": null,
+                    "body": "{\n    \"id\": \"fVKuPmjq4Ed\",\n    \"joke\": \"A Skeleton walked into a bar he said I need a beer and a mop\",\n    \"status\": 200\n}"
+                },
+                {
+                    "id": "e8855a99-68c3-4936-a68f-6db902714d80",
+                    "name": "Dad Jokes cheese factory",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "https://icanhazdadjoke.com/?54356435=5345435&new",
+                            "protocol": "https",
+                            "host": [
+                                "icanhazdadjoke",
+                                "com"
+                            ],
+                            "path": [
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "54356435",
+                                    "value": "5345435",
+                                    "description": "description 4234234"
+                                },
+                                {
+                                    "key": "new",
+                                    "value": null
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Date",
+                            "value": "Tue, 28 Sep 2021 21:08:54 GMT"
+                        },
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "key": "Transfer-Encoding",
+                            "value": "chunked"
+                        },
+                        {
+                            "key": "Connection",
+                            "value": "keep-alive"
+                        },
+                        {
+                            "key": "cache-control",
+                            "value": "max-age=0, must-revalidate, no-cache, no-store, public, s-maxage=0"
+                        },
+                        {
+                            "key": "x-frame-options",
+                            "value": "DENY"
+                        },
+                        {
+                            "key": "x-xss-protection",
+                            "value": "1; mode=block"
+                        },
+                        {
+                            "key": "CF-Cache-Status",
+                            "value": "DYNAMIC"
+                        },
+                        {
+                            "key": "Expect-CT",
+                            "value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+                        },
+                        {
+                            "key": "Report-To",
+                            "value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=OVaLDI8ccFRpXfneylosyp6O5a8VsRK%2BKsQGBAPxacQa%2FJ%2FQujJfoVrxyO9Jc8kgxSSgqxrkKGq9M0TRrbsLZKq36NDudmJ1eGO5jJo1YutAqRVBzLOvfLflsGFwmkb8%2FK5F00s%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+                        },
+                        {
+                            "key": "NEL",
+                            "value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+                        },
+                        {
+                            "key": "Strict-Transport-Security",
+                            "value": "max-age=15552000; includeSubDomains"
+                        },
+                        {
+                            "key": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "key": "Server",
+                            "value": "cloudflare"
+                        },
+                        {
+                            "key": "CF-RAY",
+                            "value": "695ff31e7dbf6089-SEA"
+                        },
+                        {
+                            "key": "Content-Encoding",
+                            "value": "br"
+                        },
+                        {
+                            "key": "alt-svc",
+                            "value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400, h3-28=\":443\"; ma=86400, h3-27=\":443\"; ma=86400"
+                        }
+                    ],
+                    "cookie": [],
+                    "responseTime": null,
+                    "body": "{\n    \"id\": \"SSCQCdi39Ed\",\n    \"joke\": \"Did you hear about the cheese factory that exploded in France? There was nothing left but de Brie.\",\n    \"status\": 200\n}"
+                }
+            ]
+        },
+        {
+            "name": "Chuck Norris Jokes",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Body matches string\", function () {\r",
+                            "    pm.expect(pm.response.text()).to.include(\"string_you_want_to_search\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "id": "eaf4a71d-a416-467c-99b4-944d8b875798"
+                    }
+                }
+            ],
+            "id": "9564ddb3-e5a8-4eb1-a335-648f96e0ddd9",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://api.icndb.com/jokes/random?firstName=John&amp;lastName=Doe",
+                    "protocol": "http",
+                    "host": [
+                        "api",
+                        "icndb",
+                        "com"
+                    ],
+                    "path": [
+                        "jokes",
+                        "random"
+                    ],
+                    "query": [
+                        {
+                            "key": "firstName",
+                            "value": "John"
+                        },
+                        {
+                            "key": "amp;lastName",
+                            "value": "Doe"
+                        }
+                    ]
+                },
+                "description": "Generates a Chuck Norris joke."
+            },
+            "response": [
+                {
+                    "id": "387587bb-2689-42a8-ad7e-276a551e6eec",
+                    "name": "Chuck Norris Jokes",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://api.icndb.com/jokes/random?firstName=John&amp;lastName=Doe",
+                            "protocol": "http",
+                            "host": [
+                                "api",
+                                "icndb",
+                                "com"
+                            ],
+                            "path": [
+                                "jokes",
+                                "random"
+                            ],
+                            "query": [
+                                {
+                                    "key": "firstName",
+                                    "value": "John"
+                                },
+                                {
+                                    "key": "amp;lastName",
+                                    "value": "Doe"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Date",
+                            "value": "Wed, 07 Apr 2021 19:45:27 GMT"
+                        },
+                        {
+                            "key": "Server",
+                            "value": "Apache"
+                        },
+                        {
+                            "key": "Access-Control-Allow-Origin",
+                            "value": "*"
+                        },
+                        {
+                            "key": "Access-Control-Allow-Methods",
+                            "value": "GET"
+                        },
+                        {
+                            "key": "Cache-Control",
+                            "value": "no-cache, must-revalidate"
+                        },
+                        {
+                            "key": "Expires",
+                            "value": "Sat, 26 Jul 1997 05:00:00 GMT"
+                        },
+                        {
+                            "key": "Vary",
+                            "value": "User-Agent"
+                        },
+                        {
+                            "key": "Keep-Alive",
+                            "value": "timeout=5, max=100"
+                        },
+                        {
+                            "key": "Connection",
+                            "value": "Keep-Alive"
+                        },
+                        {
+                            "key": "Transfer-Encoding",
+                            "value": "chunked"
+                        },
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "cookie": [],
+                    "responseTime": null,
+                    "body": "{\n    \"type\": \"success\",\n    \"value\": {\n        \"id\": 391,\n        \"joke\": \"TNT was originally developed by John Norris to cure indigestion.\",\n        \"categories\": []\n    }\n}"
+                }
+            ]
+        }
+    ]
+}
